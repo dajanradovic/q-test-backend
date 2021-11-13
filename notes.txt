@@ -1,0 +1,14 @@
+run test command
+
+vendor\bin\phpunit --debug - windows
+php vendor/bin/phpunit - linux
+
+//run server for testing  (if change port, change also in env because it is used for testing)
+php -S localhost:9000 -t public/
+
+
+
+//if run on apache, point domain to public folder
+
+
+
