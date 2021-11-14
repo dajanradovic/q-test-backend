@@ -15,17 +15,28 @@ class QBackendService extends GenericApiHandler{
         
         $body = ['email' => $email, 'password' => $password];
        
-        return $response = $this->post('/api/v2/token', $body);
+        $response = $this->handleRoutes(self::POST_METHOD, '/api/v2/token', $body);
+        
+        if(!$response['errors']){
+            return $response['data'];
+        }
+
+        return $response;
     }
 
     public function deleteBook(string $id){
                
-        return $response = $this->delete('/api/v2/books/' . $id);
+       $response = $this->handleRoutes(self::DELETE_METHOD, '/api/v2/books/' . $id);
+       
+       if(!$response['errors']){
+            return $response['data'];
+        }
     }
 
     public function deleteAuthor(string $id){
                
-        return $response = $this->delete('/api/v2/authors/' . $id);
+       $this->handleRoutes(self::DELETE_METHOD,'/api/v2/authors/' . $id);
+        
     }
 
     public function storeBook(string $title, string $description, string $format, string $isbn, string $releaseDate, string $numberOfPages, string $author){
@@ -38,23 +49,40 @@ class QBackendService extends GenericApiHandler{
                 'number_of_pages' => intval($numberOfPages),
                 'author' => ['id' => $author]];
        
-        return $response = $this->post('/api/v2/books', $body);
+        $response = $this->handleRoutes(self::POST_METHOD, '/api/v2/books', $body);
+
+        if(!$response['errors']){
+            return $response['data'];
+        }
     }
 
     public function authors(?string $queryString = null){
+        
         $query = $queryString ? '?' . $queryString : null;
-        return $response = $this->get('/api/v2/authors' . $query);
+        $response = $this->handleRoutes(self::GET_METHOD, '/api/v2/authors' . $query);
+       
+        if(!$response['errors']){
+            return $response['data'];
+        }
     }
 
     public function singleAuthor(?string $id){
 
-        return $response = $this->get('/api/v2/authors/' . $id);
+        $response = $this->handleRoutes(self::GET_METHOD, '/api/v2/authors/' . $id);
         
+        if(!$response['errors']){
+            return $response['data'];
+        }
+       
     }
 
     public function booksByAuthor(?string $id){
        
-      return  $response = $this->get('/api/v2/books');
+        $response = $this->handleRoutes(self::GET_METHOD, '/api/v2/books');
+        
+        if(!$response['errors']){
+            return $response['data'];
+        }
         
     }
  

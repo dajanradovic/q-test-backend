@@ -1,11 +1,7 @@
 <?php
 namespace App\Services;
 
-//session_start();
-
-
 use eftec\bladeone\BladeOne;
-
 
 class ViewsGeneratorService {
 
@@ -17,35 +13,68 @@ class ViewsGeneratorService {
     public function __construct(){
 
         $this->blade = new BladeOne(self::VIEWS,self::CACHE, BladeOne::MODE_DEBUG); // MODE_DEBUG allows to pinpoint troubles.
-
-
     }
     
-    public function loginView(){
+    public function loginView(array $oldData = null, callable $setHeader = null){
+       
         $csrfToken = $this->createCSRFToken();
-
-        echo $this->blade->run("login",array("csrf"=> $csrfToken)); 
+        
+        if(is_callable($setHeader)){
+            call_user_func($setHeader);
+        }
+        echo $this->blade->run("login", ["csrf"=> $csrfToken, 'oldData' => $oldData]); 
+        exit();
     }
 
-    public function addBookView(array $authors){
+    public function addBookView(array $authors, array $oldData = null, callable $setHeader = null){
+        
         $csrfToken = $this->createCSRFToken();
 
-        echo $this->blade->run("books-add",["csrf"=> $csrfToken, 'authors' => $authors]); 
+        if(is_callable($setHeader)){
+            call_user_func($setHeader);
+        }
+        echo $this->blade->run("books-add", ["csrf"=> $csrfToken, 'authors' => $authors, 'oldData' => $oldData]); 
+        exit();
     }
 
     public function authorsView(array $response){
+        
         echo $this->blade->run("authors-list", ['authors' => $response] ); 
+        exit();
     }
 
     public function singleAuthorView(array $response){
+       
         echo $this->blade->run("authors-single", ['author' => $response] ); 
+        exit();
     }
 
     public function homeView(){
+       
         echo $this->blade->run("home"); 
+        exit();
+    }
+
+    public function unauthorizedView(){
+        
+        http_response_code(403);
+        echo $this->blade->run("unauthorized403"); 
+        exit();
+    }
+
+    public function injectErrors($errorArray){
+
+        $errorCallback = function($key = null) use ($errorArray) {
+            if (array_key_exists($key, $errorArray)) {
+                return $errorArray[$key];
+            }
+        
+            return false;
+        };
+        echo $this->blade->setErrorFunction($errorCallback); 
     }
       
-    private function createCSRFToken(){
+    public function createCSRFToken(){
 
        $csrfToken = md5(uniqid(mt_rand(), true));
        $_SESSION['csrf_token'] = $csrfToken;

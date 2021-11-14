@@ -3,6 +3,16 @@ run test command
 vendor\bin\phpunit --debug - windows
 php vendor/bin/phpunit - linux
 
+#prepare for running tests
+
+!!!!IMPORTANT!!! 
+
+# make sure TEST_EMAIL AND TEST_PASSWORD in .env file are set to real working credentials
+# once obtained valid token, store it in .env in TEST_TOKEN
+# set TEST_MODE to "1"  --- DON'T FORGET TO PUT IT TO TEST_MODE="0" IN ORDER FOR APP TO WORK CORRECTLY
+
+!!!!IMPORTANT!!! 
+
 //run server for testing  (if change port, change also in env because it is used for testing)
 php -S localhost:9000 -t public/
 

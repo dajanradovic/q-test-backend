@@ -3,55 +3,86 @@
 namespace App\Services\GenericApiHandler;
 //session_start();
 
+use Exception;
 use GuzzleHttp\Client;
-
+use App\Services\ViewsGeneratorService;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\BadResponseException;
 
 abstract class GenericApiHandler {
 
+    public const ERROR_CODE_401 = 401;
+    public const ERROR_CODE_403 = 403;
     protected $client;
+    private $token;
+    public const GET_METHOD = 'GET';
+    public const POST_METHOD = 'POST';
+    public const PUT_METHOD = 'PUT';
+    public const PATCH_METHOD = 'PATCH';
+    public const DELETE_METHOD = 'DELETE';
+    
 
-    public function __construct(string $baseUri, array $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json']) {
-
+    public function __construct(string $baseUri, array $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'])
+    {
         $this->client = new Client(['base_uri' => $baseUri, 'headers' => $headers, 'http_errors' => true]);
+        $this->token = $_ENV['TEST_MODE'] == '1' ? $_ENV['TEST_TOKEN'] : ($_SESSION['user']['api_token'] ?? null);
     }
 
-    protected function get(string $uri){
+    public function handleRoutes(string $method, string $uri, array $body = null)
+    {
+        try {
+            switch ($method) {
 
-        $res = $this->client->request('GET', $uri, ['headers' => ['Authorization' => 'Bearer ' . $_SESSION['user']['api_token']]]);
+                case self::GET_METHOD:
+                   return $this->get($uri);
+                   
+                   break;
+            
+                case self::POST_METHOD:
+                   return  $this->post($uri, $body);
+                   
+                   break;
+                case self::DELETE_METHOD:
+                   return $this->delete($uri);
+                   
+                   break;
+                }
+             } catch (ClientException $e) {
+                $response = $e->getResponse();
+                
+                if ($response->getStatusCode() == SELF::ERROR_CODE_401) {
+                    
+                        removeUserFromSession();
+                        $viewer = new ViewsGeneratorService();
+                        $viewer->unauthorizedView();
 
-        return json_decode($res->getBody(), true);
-
+                }
+                if ($response->getStatusCode() == SELF::ERROR_CODE_403) {
+                    
+                        return ['errors' => true];
+                }
+            } catch (Exception $e) {
+                dd('generakl');
+            }
     }
 
-    protected function delete(string $uri){
-
-        $res =  $this->client->delete($uri, ['headers' => ['Authorization' => 'Bearer ' . $_SESSION['user']['api_token']]]);
-
+    private function get(string $uri)
+    {
+        $res = $this->client->request('GET', $uri, ['headers' => ['Authorization' => 'Bearer ' . $this->token]]);
+        return ['errors' => false, 'data' => json_decode($res->getBody(), true)];
+      
     }
 
-    protected function post(string $uri, array $body = null){
-     
-       try{
-       $res =  $this->client->post($uri, ['json' => $body, 'headers' => ['Authorization' => 'Bearer ' . $_SESSION['user']['api_token']]]);
-       
-       return json_decode($res->getBody(), true);
-       }
-       catch(\GuzzleHttp\Exception\RequestException $e){
-        $response = $e->getResponse();
-        var_dump($response->getStatusCode()); // HTTP status code;
-        var_dump($response->getReasonPhrase()); // Response message;
-        var_dump(json_decode($response->getBody(), true)['errors'][0]); // Body, normally it is JSON;
-        /*var_dump(json_decode((string) $response->getBody())); // Body as the decoded JSON;
-        var_dump($response->getHeaders()); // Headers array;
-        var_dump($response->hasHeader('Content-Type')); // Is the header presented?
-        var_dump($response->getHeader('Content-Type')[0]); // Concr*/
-       }
+    private function delete(string $uri)
+    {
+       $this->client->delete($uri, ['headers' => ['Authorization' => 'Bearer ' . $this->token]]);
     }
 
-    function dd($variable){
-        echo '<pre>';
-        die(var_dump($variable));
-        echo '</pre>';
+    private function post(string $uri, array $body = null)
+    {        
+        $res =  $this->client->post($uri, ['json' => $body, 'headers' => ['Authorization' => 'Bearer ' . $this->token]]);
+        return ['errors' => false, 'data' => json_decode($res->getBody(), true)];
     }
-
+    
 }

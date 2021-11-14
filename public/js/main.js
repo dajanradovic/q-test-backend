@@ -5,7 +5,8 @@ for (var i = 0; i < deleteButtons.length; i++) {
         e.preventDefault();
         const form = e.currentTarget;
         const authorId = form.dataset.id
-        fetch('http://localhost:9000/api/author/books', {
+        const url = document.getElementById('authorsTable').dataset.baseurl;
+        fetch(url + '/api/author/books', {
             method: 'post',
             headers: {
               'Accept': 'application/json',

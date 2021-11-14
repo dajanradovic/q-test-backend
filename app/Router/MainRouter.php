@@ -14,8 +14,6 @@ class MainRouter{
 
     public const GET_METHOD = 'GET';
     public const POST_METHOD = 'POST';
-    public const PUT_METHOD = 'PUT';
-    public const PATCH_METHOD = 'PATCH';
     public const DELETE_METHOD = 'DELETE';
 
     public const AUTHOR_PATTERN = 'authors';
@@ -36,9 +34,8 @@ class MainRouter{
             case '/':
                 if($method == self::GET_METHOD){
                     HomeController::index();
-                    exit();
                 }
-                
+
                 self::error404(); 
                            
                 break;
@@ -52,12 +49,10 @@ class MainRouter{
 
                     $viewer = new ViewsGeneratorService();
                     $viewer->loginView();
-                    exit();
                 }
                
                 else if ($method == self::POST_METHOD){
                     AuthenticationController::login();
-                    exit();
                 }
 
                 self::error404(); 
@@ -70,10 +65,10 @@ class MainRouter{
                     if(!$authenticator->isAuthenticated()){
                       self::error401();
                     }
-                     AuthenticationController::logout();
-                     exit();
 
+                     AuthenticationController::logout();
                 }
+
                 self::error404(); 
                
                 break;
@@ -86,13 +81,13 @@ class MainRouter{
                     }
                    
                     AuthorController::authors($queryString);
-                    exit();
                 }
         
                 self::error404(); 
 
                 break;
 
+                //authors/{id}
             case '/authors/' :
 
                 if($method == self::GET_METHOD){
@@ -101,7 +96,6 @@ class MainRouter{
                     }
 
                     AuthorController::singleAuthor($lastParameter);
-                    exit();
                 }
                 else if($method == self::POST_METHOD && $_POST['method'] == self::DELETE_METHOD){
                    
@@ -110,7 +104,6 @@ class MainRouter{
                       }
 
                     AuthorController::deleteAuthor($lastParameter);
-                    exit();
                 }
 
                 self::error404(); 
@@ -122,36 +115,37 @@ class MainRouter{
         
                 break;
 
+                // books/{id}
             case '/books/' :
                 if($method == self::POST_METHOD && $_POST['method'] == self::DELETE_METHOD){
                     if(!$authenticator->isAuthenticated()){
                         self::error401();
                       }
+
                     BookController::deleteBook($lastParameter);
-                    exit();
                 }
+
                 self::error404(); 
             
                 break;
 
             case '/api/author/books' :
+
                 if($method == self::POST_METHOD){
                     if(!$authenticator->isAuthenticated()){
                         self::error401();
                       }
 
                     AuthorApiController::checkIfAuthorHasBooks();
-                    exit();
                 }
+
                 self::error404(); 
                 
                 break;
                       
             default:
                 self::error404(); 
-        
         }
-     
     }
 
     public static function error404(): void {
@@ -174,17 +168,17 @@ class MainRouter{
 
         if(count($additionalParameters) > 2 
                 && $additionalParameters[count($additionalParameters) - 2] == self::AUTHOR_PATTERN
-                && preg_match('/^[0-9]/', $additionalParameters[count($additionalParameters) - 1])){
+                && preg_match('/^[0-9]/', $additionalParameters[count($additionalParameters) - 1])) {
          
-            $lastParameter = $additionalParameters[count($additionalParameters) - 1];
-            $uri = self::AUTHOR_ID_PATTERN;         
+                    $lastParameter = $additionalParameters[count($additionalParameters) - 1];
+                    $uri = self::AUTHOR_ID_PATTERN;         
         }
         else if(count($additionalParameters) > 2 
-                    && $additionalParameters[count($additionalParameters) - 2] == self::BOOK_PATTERN
-                    && preg_match('/^[0-9]/', $additionalParameters[count($additionalParameters) - 1])){
+                && $additionalParameters[count($additionalParameters) - 2] == self::BOOK_PATTERN
+                && preg_match('/^[0-9]/', $additionalParameters[count($additionalParameters) - 1])) {
             
-                $lastParameter = $additionalParameters[count($additionalParameters) - 1];
-                $uri = self::BOOK_ID_PATTERN;         
+                    $lastParameter = $additionalParameters[count($additionalParameters) - 1];
+                    $uri = self::BOOK_ID_PATTERN;         
           }
             
         else{
