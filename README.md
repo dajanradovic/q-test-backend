@@ -11,8 +11,9 @@ Run locally with php dev server - steps:
 1) create .env file, copy contents from .env.example
     - do not change anything, TEST_MODE variable must be '0' when not testing
     - it will run default on port 9000, if you change port please change BASE_URL in .env file
-
-2) start dev server   php -S localhost:9000 -t public/
+2) composer install
+3) composer dump-autoload
+4) start dev server   php -S localhost:9000 -t public/
 
 
 Run on docker
