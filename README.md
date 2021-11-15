@@ -13,7 +13,7 @@ Run locally with php dev server - steps:
     - it will run default on port 9000, if you change port please change BASE_URL in .env file
 2) composer install
 3) composer dump-autoload
-4) start dev server   php -S localhost:9000 -t public/
+4) start dev server   ```php -S localhost:9000 -t public/```
 
 
 Run on docker
