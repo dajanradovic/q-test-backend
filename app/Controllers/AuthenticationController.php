@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Services\AuthenticationService;
 use App\Validators\Login;
 use App\Services\QBackendService;
 use App\Services\ViewsGeneratorService;
@@ -36,7 +37,7 @@ class AuthenticationController{
                         $qBackendService = new QBackendService();
                         $response = $qBackendService->login($email, $password);
 
-                        if($response['errors']){
+                        if(isset($response['errors'])){
 
                                 $viewer->injectErrors(['errors' => 'wrong credentials']);
 
@@ -47,7 +48,9 @@ class AuthenticationController{
                                 $viewer->loginView($_POST, $setHeader);  
                         }
 
-                        storeUserInSession($response);
+                        $authenticationService = new AuthenticationService();
+                        $authenticationService->saveToken($response);
+                        $authenticationService->storeUserDataInSession($response);
 
                         $redirection = isset($_POST['intended']) ? $_POST['intended'] : '/authors';
                         header('Location: ' . $_ENV['BASE_URL'] . $redirection);
@@ -61,7 +64,9 @@ class AuthenticationController{
 
         public static function logout(){
                
-                removeUserFromSession();
+                $authenticationService = new AuthenticationService();
+                $authenticationService->removeUserFromSessionAndInvalidateCookie();
+
                 header('Location: ' . $_ENV['BASE_URL'] . '/');
                 exit();
 

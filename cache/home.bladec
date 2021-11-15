@@ -2,7 +2,7 @@
 
 <?php $this->startSection('content'); ?>
 
-<h2>Welcome to the Q Test Project app</h2>
+ <h2>Welcome to the Q Test Project app</h2>
 
 <?php $this->stopSection(); ?>
 <?php if (isset($_shouldextend[1])) { echo $this->runChild('base'); } ?>

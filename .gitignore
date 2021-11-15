@@ -1,5 +1,6 @@
 /vendor
 .env
 .phpunit.result.cache
-/cache
+/cache/
+/app/files/
 

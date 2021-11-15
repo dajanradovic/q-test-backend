@@ -5,6 +5,7 @@ namespace App\Services\GenericApiHandler;
 
 use Exception;
 use GuzzleHttp\Client;
+use App\Services\AuthenticationService;
 use App\Services\ViewsGeneratorService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -14,6 +15,7 @@ abstract class GenericApiHandler {
 
     public const ERROR_CODE_401 = 401;
     public const ERROR_CODE_403 = 403;
+    public const ERROR_CODE_404 = 404;
     protected $client;
     private $token;
     public const GET_METHOD = 'GET';
@@ -53,7 +55,8 @@ abstract class GenericApiHandler {
                 
                 if ($response->getStatusCode() == SELF::ERROR_CODE_401) {
                     
-                        removeUserFromSession();
+                        $authenticationService = new AuthenticationService();
+                        $authenticationService->removeUserFromSessionAndInvalidateCookie();
                         $viewer = new ViewsGeneratorService();
                         $viewer->unauthorizedView();
 
@@ -62,8 +65,15 @@ abstract class GenericApiHandler {
                     
                         return ['errors' => true];
                 }
+
+                if ($response->getStatusCode() == SELF::ERROR_CODE_404) {
+                    
+                    return ['errors' => true];
+            }
             } catch (Exception $e) {
-                dd('generakl');
+                        
+                        return ['errors' => true];
+
             }
     }
 
@@ -77,6 +87,8 @@ abstract class GenericApiHandler {
     private function delete(string $uri)
     {
        $this->client->delete($uri, ['headers' => ['Authorization' => 'Bearer ' . $this->token]]);
+       return ['errors' => false, 'data' => []];
+
     }
 
     private function post(string $uri, array $body = null)

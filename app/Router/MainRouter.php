@@ -8,6 +8,7 @@ use App\Controllers\AuthorController;
 use App\Controllers\Api\AuthorController as AuthorApiController;
 use App\Services\ViewsGeneratorService;
 use App\Controllers\AuthenticationController;
+use App\Middlewares\AuthenticationMiddleware;
 use App\Middlewares\SessionAuthMiddleware;
 
 class MainRouter{
@@ -23,6 +24,9 @@ class MainRouter{
 
 
     public function determineRoute(string $uri): void {
+
+        $authenticationMiddleware = new AuthenticationMiddleware();
+        $authenticationMiddleware->checkForCookie();
 
         $method = $_SERVER['REQUEST_METHOD'];
         $queryString = $_SERVER['QUERY_STRING'] ?? null;

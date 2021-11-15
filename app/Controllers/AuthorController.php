@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Router\MainRouter;
 use App\Services\QBackendService;
 use App\Services\ViewsGeneratorService;
 
@@ -21,6 +22,11 @@ class AuthorController{
             $viewer = new ViewsGeneratorService();
             $qBackendService = new QBackendService();
             $author = $qBackendService->singleAuthor($id);
+
+            if(isset($author['errors'])){
+               MainRouter::error404();
+             }
+
             $viewer->singleAuthorView($author);
 
        }

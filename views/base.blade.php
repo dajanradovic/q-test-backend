@@ -35,7 +35,7 @@
 		  </ul>
 		  <span class="navbar-text">
 			  @if(isset($_SESSION['user']))
-					{{$_SESSION['user']['name'] . ' ' . $_SESSION['user']['last_name']}}
+					{{$_SESSION['user']['name']}}
 				<form method="POST" action="<?php echo ($_ENV['BASE_URL'] . '/logout') ?>">
 							<input type="submit" class="text-danger ml-4"  value="Log out" ?>
 				</form>

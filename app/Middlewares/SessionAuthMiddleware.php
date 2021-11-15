@@ -5,18 +5,16 @@ namespace App\Middlewares;
 class SessionAuthMiddleware{
 
     private bool $user;
-    private bool  $tokenValid;
 
     public function __construct(){
 
         $this->user = isset($_SESSION['user']);
         
-        $this->tokenValid = $this->user && date($_SESSION['user']['api_token_expiry']) > date('Y/m/d H:i:s'); 
     }
 
     public function isAuthenticated() : bool{
       
-        return $_ENV['TEST_MODE'] == '1' || ($this->user && $this->tokenValid);
+        return $_ENV['TEST_MODE'] == '1' || $this->user;
     }
 
     public function redirectToLogin(string $intendedUrl = null) : void {

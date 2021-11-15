@@ -12,7 +12,7 @@ class ViewsGeneratorService {
 
     public function __construct(){
 
-        $this->blade = new BladeOne(self::VIEWS,self::CACHE, BladeOne::MODE_DEBUG); // MODE_DEBUG allows to pinpoint troubles.
+        $this->blade = new BladeOne(self::VIEWS,self::CACHE, BladeOne::MODE_DEBUG);
     }
     
     public function loginView(array $oldData = null, callable $setHeader = null){

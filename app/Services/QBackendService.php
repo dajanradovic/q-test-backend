@@ -27,10 +27,7 @@ class QBackendService extends GenericApiHandler{
     public function deleteBook(string $id){
                
        $response = $this->handleRoutes(self::DELETE_METHOD, '/api/v2/books/' . $id);
-       
-       if(!$response['errors']){
-            return $response['data'];
-        }
+                
     }
 
     public function deleteAuthor(string $id){
@@ -73,6 +70,8 @@ class QBackendService extends GenericApiHandler{
         if(!$response['errors']){
             return $response['data'];
         }
+
+        return $response;
        
     }
 
